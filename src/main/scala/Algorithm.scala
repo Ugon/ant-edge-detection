@@ -19,7 +19,7 @@ object Algorithm {
       var sum: Double = 0
 
       //movement direction probability calculation
-      for (i <- -1 to 1; j <- -1 to 1; i != j) { //if i != j then ant has to move
+      for (i <- -1 to 1; j <- -1 to 1; if i != j) { //if i != j then ant has to move
         val newX = currX + i
         val newY = currY + j
 
@@ -36,7 +36,7 @@ object Algorithm {
 
       //movement
       if (sum != 0) {
-        val tupleSeq : Seq[((Int, Int), Double)] = for (i <- -1 to 1; j <- -1 to 1; i != j) yield ((i + 1, j + 1), probabilities(i + 1)(j + 1) / sum)
+        val tupleSeq : Seq[((Int, Int), Double)] = for (i <- -1 to 1; j <- -1 to 1; if i != j) yield ((i + 1, j + 1), probabilities(i + 1)(j + 1) / sum)
         val map : Map[(Int, Int), Double] = tupleSeq.toMap
         val nextCoords = sample(map)
         output.ants(antIndex) = nextCoords
