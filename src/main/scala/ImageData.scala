@@ -1,8 +1,11 @@
+import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.filter.GrayscaleFilter
+
 /**
   * @author Wojciech Pachuta.
   */
 
-class ImageData(val x: Int, val y: Int) {
+class ImageData(image: Image) {
   /*                x
        ------------->
      | .............
@@ -13,10 +16,17 @@ class ImageData(val x: Int, val y: Int) {
      | .............
    y v                */
 
+  val grayImage = image.filter(GrayscaleFilter)
+  val (x, y) = grayImage.dimensions
+
   val matrix : Array[Array[Int]] = Array.ofDim(x, y)                        //I
-  val grayMax : Int = matrix.flatten.max                                    //Imax
+  val grayMax : Int = if (matrix.flatten.max > 0) matrix.flatten.max else 1 //Imax
   val grayGradient : Array[Array[Double]] = Array.ofDim(x, y)               //deltaI
-  val noAnts : Int = Math.sqrt(x * y).ceil.toInt
+  val noAnts : Int = AlgorithmParams.numberOfAntsMultiplier * Math.sqrt(x * y).ceil.toInt
+
+  for(i <- 0 until x; j <- 0 until y){
+    matrix(i)(j) = grayImage.pixel(i, j).red
+  }
 
   for(i <- 0 until x) {
     grayGradient(i)(0) = matrix(i)(0)
@@ -34,6 +44,10 @@ class ImageData(val x: Int, val y: Int) {
       Math.abs(matrix(i - 1)(j - 1) - matrix(i + 1)(j + 1))
     )
     grayGradient(i)(j) = arr.max.toDouble / grayMax
+  }
+
+  def isPixelWithin(coords : (Int, Int)) = coords match {
+    case (a, b) => a > 0 && b > 0 && a < this.x && b < this.y
   }
 
 }
