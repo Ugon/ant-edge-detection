@@ -1,3 +1,5 @@
+package algorithm
+
 import scala.collection.mutable
 
 /**

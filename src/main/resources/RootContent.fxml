@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import utils.DoubleField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import utils.IntField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.chart.BubbleChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.FlowPane?>
+<BorderPane fx:controller="controllers.ContentController" xmlns:fx="http://javafx.com/fxml/1" >
+    <left>
+        <ImageView fx:id="imageView" preserveRatio="true" fitWidth="500"/>
+    </left>
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <GridPane vgap="10" hgap="10">
+                <IntField fx:id="stepsPerIteration" prefWidth="70" GridPane.rowIndex="1" GridPane.columnIndex="0" value="1"/>
+                <Label text="(int) iterationsPerStep" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <IntField fx:id="midIterationPeriod" prefWidth="70" GridPane.rowIndex="2" GridPane.columnIndex="0" value="100"/>
+                <Label text="(int) stepPeriod [ms]" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="numberOfAntsMultiplier" prefWidth="70" GridPane.rowIndex="3" GridPane.columnIndex="0" value="1"/>
+                <Label text="(double) numberOfAntsMultiplier" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="alpha" prefWidth="70" GridPane.rowIndex="4" GridPane.columnIndex="0" value="1.0"/>
+                <Label text="(double) alpha (pheromone)" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="beta" prefWidth="70" GridPane.rowIndex="5" GridPane.columnIndex="0" value="10.0"/>
+                <Label text="(double) beta (gradient)" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="evaporationRate" prefWidth="70" GridPane.rowIndex="6" GridPane.columnIndex="0" value="0.5"/>
+                <Label text="(double) (0; 1) evaporationRate" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="gradientThreshold" prefWidth="70" GridPane.rowIndex="7" GridPane.columnIndex="0" value="50"/>
+                <Label text="(double) (0; 255) gradientThreshold" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                <DoubleField fx:id="pheromoneCoverage" prefWidth="70" GridPane.rowIndex="8" GridPane.columnIndex="0" value="0.1"/>
+                <Label text="(double) (%) pheromoneCoverage" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+            </GridPane>
+            <Button text="Restart" prefWidth="150"  GridPane.rowIndex="9" GridPane.columnIndex="0" onAction="#onRestart"/>
+            <Button text="Pause" prefWidth="150"  GridPane.rowIndex="10" GridPane.columnIndex="0" onAction="#onPause"/>
+            <Button text="Resume" prefWidth="150"  GridPane.rowIndex="11" GridPane.columnIndex="0" onAction="#onResume"/>
+        </VBox>
+
+    </center>
+</BorderPane>

@@ -1,12 +1,14 @@
+package algorithm
+
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
-import scala.collection.mutable
 
 /**
   * @author Wojciech Pachuta.
   */
-class AlgorithmState private(val imageData: ImageData) {
-  val ants: Array[Ant] = Array.ofDim(imageData.noAnts)
+class AlgorithmState private(val imageData: ImageData, val params: AlgorithmParams) {
+  val ants: ListBuffer[Ant] = ListBuffer()
   private var pixelsOccupied: mutable.HashSet[(Int, Int)] = mutable.HashSet()
   val pheromone: Array[Array[Double]] = Array.ofDim(imageData.x, imageData.y)
 
@@ -19,24 +21,26 @@ class AlgorithmState private(val imageData: ImageData) {
 
       val possibilities: ListBuffer[(Int, Int)] = ListBuffer()
       val probabilities: Array[Array[Double]] = Array.ofDim(3, 3)
+      val outside: ListBuffer[(Int, Int)] = ListBuffer()
       var sum: Double = 0
 
       //movement direction probability calculation
       for (i <- -1 to 1; j <- -1 to 1; if i != j) {
         val newCoords@(newX, newY) = (currX + i, currY + j)
         if (imageData.isPixelWithin(newCoords) && !ant.visited(newCoords) && !newPixelsOccupied.contains(newCoords)) {
-          val a = Math.pow(pheromone(newX)(newY), AlgorithmParams.alpha)
-          val b = Math.pow(imageData.grayGradient(newX)(newY), AlgorithmParams.beta)
-          val prod = Math.pow(pheromone(newX)(newY), AlgorithmParams.alpha) *
-            Math.pow(imageData.grayGradient(newX)(newY), AlgorithmParams.beta)
+          //if pixel allowed
+          val prod = Math.pow(pheromone(newX)(newY), params.alpha) *
+            Math.pow(imageData.grayGradient(newX)(newY), params.beta)
           probabilities(i + 1)(j + 1) = prod
           sum += prod
           possibilities.append((i + 1, j + 1))
         }
         else {
+          //if pixel not allowed
           probabilities(i + 1)(j + 1) = 0
         }
       }
+
 
       //movement
       var antMoved = false
@@ -47,14 +51,14 @@ class AlgorithmState private(val imageData: ImageData) {
 
         val coordPossibMap: Map[(Int, Int), Double] = tupleSeq.toMap
         if (coordPossibMap.nonEmpty) {
-          //if movement possible and pheromone nearby
+          //if movement possible and pheromone nearby go to pheromone pixel
           val (dx, dy) = sample(coordPossibMap)
           ant.moveTo((currX + dx - 1, currY + dy - 1))
           newPixelsOccupied.add((currX + dx - 1, currY + dy - 1))
           antMoved = true
         }
         else if (possibilities.nonEmpty) {
-          //if movement possible but no pheromone nearby
+          //if movement possible but no pheromone nearby go to random pixel
           val (dx, dy) = Random.shuffle(possibilities).head
           ant.moveTo((currX + dx - 1, currY + dy - 1))
           newPixelsOccupied.add((currX + dx - 1, currY + dy - 1))
@@ -62,8 +66,7 @@ class AlgorithmState private(val imageData: ImageData) {
         }
       }
 
-      if (!antMoved){
-        //if movement impossible
+      if (!antMoved) {
         var chosenCoords: (Int, Int) = (Random.nextInt(imageData.x), Random.nextInt(imageData.y))
         while (newPixelsOccupied.contains(chosenCoords)) {
           chosenCoords = (Random.nextInt(imageData.x), Random.nextInt(imageData.y))
@@ -75,11 +78,11 @@ class AlgorithmState private(val imageData: ImageData) {
 
     //pheromone calculation
     for (i <- 0 until imageData.x; j <- 0 until imageData.y) {
-      pheromone(i)(j) *= (1 - AlgorithmParams.evaporationRate)
+      pheromone(i)(j) *= (1 - params.evaporationRate)
     }
     newPixelsOccupied.foreach { case (x, y) =>
       val grad: Double = imageData.grayGradient(x)(y)
-      pheromone(x)(y) += (if (grad > AlgorithmParams.minGradientForPheromone) grad else 0)
+      pheromone(x)(y) += (if (grad > params.gradientThreshold) grad else 0)
     }
 
     pixelsOccupied = newPixelsOccupied
@@ -97,11 +100,31 @@ class AlgorithmState private(val imageData: ImageData) {
     }
     Random.shuffle(dist.keys).head // needed so it will compile
   }
+
+  def changeNumberOfAntsMultiplier(value: Double) = {
+    if (value != imageData.numberOfAntsMultiplier) {
+      imageData.numberOfAntsMultiplier = value
+      if (ants.length > imageData.noAnts) {
+        ants.remove(0, ants.length - imageData.noAnts)
+      }
+      else {
+        val len = ants.length
+        for (i <- len until imageData.noAnts) {
+          var newCoords: (Int, Int) = (Random.nextInt(imageData.x), Random.nextInt(imageData.y))
+          while (pixelsOccupied.contains(newCoords)) {
+            newCoords = (Random.nextInt(imageData.x), Random.nextInt(imageData.y))
+          }
+          ants.append(new Ant(newCoords))
+        }
+      }
+
+    }
+  }
 }
 
 object AlgorithmState {
-  def initialize(imageData: ImageData): AlgorithmState = {
-    val algorithmState = new AlgorithmState(imageData)
+  def initialize(imageData: ImageData, params: AlgorithmParams): AlgorithmState = {
+    val algorithmState = new AlgorithmState(imageData, params)
 
     //select random positions for ants
     for (i <- 0 until imageData.noAnts) {
@@ -109,16 +132,15 @@ object AlgorithmState {
       while (algorithmState.pixelsOccupied.contains(newCoords)) {
         newCoords = (Random.nextInt(imageData.x), Random.nextInt(imageData.y))
       }
-      algorithmState.ants(i) = new Ant(newCoords)
+      algorithmState.ants.append(new Ant(newCoords))
     }
 
     //initialize pheromone
     for (i <- 0 until imageData.x; j <- 0 until imageData.y) {
-      algorithmState.pheromone(i)(j) = AlgorithmParams.initialPheromone
+      algorithmState.pheromone(i)(j) = params.initialPheromone
     }
 
     algorithmState
   }
-
 
 }
