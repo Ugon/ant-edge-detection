@@ -21,7 +21,6 @@ class AlgorithmState private(val imageData: ImageData, val params: AlgorithmPara
 
       val possibilities: ListBuffer[(Int, Int)] = ListBuffer()
       val probabilities: Array[Array[Double]] = Array.ofDim(3, 3)
-      val outside: ListBuffer[(Int, Int)] = ListBuffer()
       var sum: Double = 0
 
       //movement direction probability calculation

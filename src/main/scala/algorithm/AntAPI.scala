@@ -4,8 +4,6 @@ import java.io.File
 
 import com.sksamuel.scrimage.Image
 
-import scala.collection.mutable.ListBuffer
-
 /**
   * @author Wojciech Pachuta.
   */

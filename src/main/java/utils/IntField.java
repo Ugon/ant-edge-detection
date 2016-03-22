@@ -27,7 +27,6 @@ public class IntField extends TextField {
                 intField.setText("");
             } else {
                 if (newValue.intValue() == 0 && (textProperty().get() == null || "".equals(textProperty().get()))) {
-                    // no action required, text property is already blank, we don't need to set it to 0.
                 } else {
                     intField.setText(newValue.toString());
                 }

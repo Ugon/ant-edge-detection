@@ -14,8 +14,6 @@ public class ContentController {
 
     private String imageName;
     private ContentUpdater thread;
-    private boolean threadPaused;
-    private boolean threadKilled;
 
     @FXML
     private DoubleField pheromoneCoverage;
@@ -79,9 +77,7 @@ public class ContentController {
     }
 
     public void onPause(ActionEvent actionEvent) {
-        int a = 3;
         thread.pauseExecution();
-        a = 4;
     }
 
     public void onResume(ActionEvent actionEvent) {

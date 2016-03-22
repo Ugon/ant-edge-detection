@@ -22,7 +22,6 @@ public class ContentUpdater extends Thread implements Runnable {
     private final int imageWidth;
 
     private boolean paused = false;
-    private final Object obj = new Object();
 
     public ContentUpdater(String imageName, ContentController contentController) {
         this.antAPI = new AntAPI(new File(imageName), contentController.getAlpha(), contentController.getBeta(),
