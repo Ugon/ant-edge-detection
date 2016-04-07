@@ -2,10 +2,15 @@ package controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import utils.DoubleField;
 import utils.IntField;
+
+import java.io.File;
 
 /**
  * @author Wojciech Pachuta.
@@ -33,6 +38,8 @@ public class ContentController {
     private DoubleField alpha;
     @FXML
     private DoubleField beta;
+    @FXML
+    private Button saveButton;
 
     public void setImage(Image image) {
         imageView.setImage(image);
@@ -74,14 +81,25 @@ public class ContentController {
         thread.interrupt();
         thread.join();
         begin(imageName);
+        saveButton.setDisable(true);
     }
 
     public void onPause(ActionEvent actionEvent) {
         thread.pauseExecution();
+        saveButton.setDisable(false);
     }
 
     public void onResume(ActionEvent actionEvent) {
         thread.resumeExecution();
+        saveButton.setDisable(true);
+    }
+
+    public void onSave(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select result file");
+        File file = fileChooser.showSaveDialog(new Stage());
+        if (file != null)
+            thread.saveCurrentState(file);
     }
 
     public void begin(String imageName) {

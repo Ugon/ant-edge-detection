@@ -6,7 +6,11 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import scala.Tuple2;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Wojciech Pachuta.
@@ -88,6 +92,25 @@ public class ContentUpdater extends Thread implements Runnable {
                 paused = false;
                 notifyAll();
             }
+        }
+    }
+
+    public void saveCurrentState(File destination) {
+        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D ig2 = image.createGraphics();
+        ig2.setBackground(java.awt.Color.WHITE);
+        ig2.clearRect(0, 0, imageWidth, imageHeight);
+
+        for (Tuple2<Object, Object> tuple : antAPI.getStrongestPheromone(contentController.getPheromoneCoverage())) {
+            int x = (Integer) tuple._1();
+            int y = (Integer) tuple._2();
+            image.setRGB(x, y, java.awt.Color.BLACK.getRGB());
+        }
+
+        try {
+            ImageIO.write(image, "jpg", destination);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
