@@ -45,6 +45,7 @@
             <Button text="Restart" prefWidth="150"  GridPane.rowIndex="9" GridPane.columnIndex="0" onAction="#onRestart"/>
             <Button text="Pause" prefWidth="150"  GridPane.rowIndex="10" GridPane.columnIndex="0" onAction="#onPause"/>
             <Button text="Resume" prefWidth="150"  GridPane.rowIndex="11" GridPane.columnIndex="0" onAction="#onResume"/>
+            <Button fx:id="saveButton"  text="Save" prefWidth="150"  GridPane.rowIndex="12" GridPane.columnIndex="0" onAction="#onSave" disable="true"/>
         </VBox>
 
     </center>
